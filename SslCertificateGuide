@@ -1,0 +1,23 @@
+#  Install openssl for centos.
+1. yum install openssl
+http://www.faqforge.com/windows/use-openssl-on-windows/
+#  To create private key.
+2. openssl genrsa -des3 -out server.key 4096
+
+#  To create certificate (.csr)request. /etc/pki/tls/openssl.cnf is path to openssl.cnf
+3. openssl req -config /etc/pki/tls/openssl.cnf -new -key server.key -out server.csr
+
+#  Sign the certificate request
+4. openssl x509 -req -days 365 -in server.csr -signkey server.key -out server.crt
+
+#  Generate p12 keystore formate which is container.
+5. openssl pkcs12 -export -in server.crt -inkey server.key -name "Your Domain Name" -out server.p12
+
+#  Generate pem file
+6. openssl pkcs12 -in server.p12 -out server.pem -nodes
+
+#  Generate jks keystore formate which is a container and it only can generate by java's keytool .
+7. /usr/java/jdk1.8.0/jre/bin/keytool -importkeystore -destkeystore keystore.jks -srckeystore /home/platformteam/server.p12 -srcstoretype pkcs12 -alias "Your Domain Name"
+
+#  Generate jks keystore formate which only contain ssl certificate.
+8. keytool -import -keystore keystore.jks -file C:\Users\inpbisht20\Downloads\OpenSSL\bin\server.crt
